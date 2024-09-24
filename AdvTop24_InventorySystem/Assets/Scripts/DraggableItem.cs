@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    public Image image;
+    
     // ref to item's starting parent so that it can be reattached after drag
-    Transform parentAfterDrag;
+    public Transform parentAfterDrag;
 
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -20,6 +23,9 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         // set item to be the last child object under the parent so that the item appears over everything
         transform.SetAsLastSibling();
+
+        // disable raycast on image component so the item doesn't block the mouse raycasts
+        image.raycastTarget = false;
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -36,6 +42,9 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         // set item back to original parent after drag
         transform.SetParent(parentAfterDrag);
+
+        // re-enable the raycast on the item's image component so that it can one again intercat with the mouse
+        image.raycastTarget = true;
     }
 
 }
