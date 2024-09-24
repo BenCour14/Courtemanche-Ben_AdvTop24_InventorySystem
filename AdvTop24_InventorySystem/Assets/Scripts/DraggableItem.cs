@@ -43,8 +43,17 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         // set item back to original parent after drag
         transform.SetParent(parentAfterDrag);
 
-        // re-enable the raycast on the item's image component so that it can one again intercat with the mouse
+        // re-enable the raycast on the item's image component so that it can one again interact with the mouse
         image.raycastTarget = true;
+
+  
+    }
+
+
+
+    public void DropItem()
+    {
+        Destroy(gameObject);
     }
 
 }
