@@ -1297,6 +1297,7 @@ GameObject:
   - component: {fileID: 834742999}
   - component: {fileID: 834742998}
   - component: {fileID: 834742997}
+  - component: {fileID: 834743000}
   m_Layer: 0
   m_Name: Player UI
   m_TagString: Untagged
@@ -1386,6 +1387,26 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &834743000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 834742995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6132e9d4e30ff09419291bb5172dc318, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items: []
+  inventoryMenu: {fileID: 114855081}
+  itemPanel: {fileID: 2695856561396257477, guid: 15691ee0a8440e04d8219202ad409247, type: 3}
+  itemPanelGrid: {fileID: 1334669351}
+  inventorySize: 24
+  references:
+    version: 2
+    RefIds: []
 --- !u!1001 &929241663
 PrefabInstance:
   m_ObjectHideFlags: 0
