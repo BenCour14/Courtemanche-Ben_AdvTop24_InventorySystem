@@ -16,6 +16,8 @@ public class Inventory : MonoBehaviour
     public GameObject itemPanel;
     public GameObject itemPanelGrid;
 
+    public Mouse mouse;
+    
     // Ref to the existing panels in the inventory so it can be updated if more slots are needed
     private List<ItemPanel> existingPanels = new List<ItemPanel>();
 
@@ -53,6 +55,9 @@ public class Inventory : MonoBehaviour
             // Adds no item and stack size to each empty slot
             items.Add(new ItemSlotInfo(null, 0));
         }
+
+        // Adding items for testing purposes
+        AddItem(new WoodItem(), 40);
     }
 
     // Update is called once per frame
@@ -66,6 +71,8 @@ public class Inventory : MonoBehaviour
             {
                 // Hide UI
                 inventoryMenu.SetActive(false);
+                // Clear item slot
+                mouse.EmptySlot();
                 // When in-game lock and remove the cursor
                 Cursor.lockState = CursorLockMode.Locked;
             }
@@ -125,6 +132,7 @@ public class Inventory : MonoBehaviour
                     // If the item exists activate the item image and stacks text
                     panel.itemImage.gameObject.SetActive(true);
                     panel.itemImage.sprite = i.item.GiveItemImage();
+                    panel.itemImage.CrossFadeAlpha(1, 0.05f, true);
                     panel.stacksText.gameObject.SetActive(true);
                     panel.stacksText.text = "" + i.stacks;
                 }
@@ -139,6 +147,7 @@ public class Inventory : MonoBehaviour
             // With every loop add 1 to the index
             index++;
         }
+        mouse.EmptySlot();
 
     }
 
