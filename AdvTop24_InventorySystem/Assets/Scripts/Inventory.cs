@@ -76,6 +76,8 @@ public class Inventory : MonoBehaviour
                 inventoryMenu.SetActive(true);
                 // When the inventory screen is open, make visible and confine the cursor
                 Cursor.lockState = CursorLockMode.Confined;
+
+                RefreshInventory();
             }
         }
 
@@ -100,13 +102,17 @@ public class Inventory : MonoBehaviour
             }
         }
 
+        // Index to track the item slots
         int index = 0;
+        
+        // Will look at each item slot in the items list and update it
         foreach (ItemSlotInfo i in items)
         {
             i.name = "" + (index + 1);
             if (i.item != null) i.name += ": " + i.item.GiveName();
             else i.name += ": --";
 
+            // Update the panels
             ItemPanel panel = existingPanels[index];
             if (panel != null)
             {
@@ -116,15 +122,90 @@ public class Inventory : MonoBehaviour
                 panel.itemSlot = i;
                 if (i.item != null)
                 {
+                    // If the item exists activate the item image and stacks text
                     panel.itemImage.gameObject.SetActive(true);
                     panel.itemImage.sprite = i.item.GiveItemImage();
                     panel.stacksText.gameObject.SetActive(true);
                     panel.stacksText.text = "" + i.stacks;
                 }
+                else
+                {
+                    // If the item deosn't exist disable the item image and stacks text
+                    panel.itemImage.gameObject.SetActive(false);
+                    panel.stacksText.gameObject.SetActive(false);
+                }
 
             }
-
+            // With every loop add 1 to the index
+            index++;
         }
 
+    }
+
+    public int AddItem(Item item, int amount)
+    {
+        // Checks if the item can get added to an existing stack
+        foreach(ItemSlotInfo i in items)
+        {
+            // Check if the item slot is not empty 
+            if (i.item != null)
+            {
+                // Check if the item being added is the same as the item in the slot
+                if (i.item.GiveName() == item.GiveName())
+                {
+                    // Checking if the amount that the player is adding is greater than the space available in the stack
+                    if (amount > i.item.MaxStacks() - i.stacks)
+                    {
+                        // If true, reduce the amount being added by the space available in the stack and fill the current stack
+                        amount -= i.item.MaxStacks() - i.stacks;
+                        i.stacks = i.item.MaxStacks();
+                    }
+                    // If the amount being added doesn't exceed max stack size, simply add the items to the stack
+                    else
+                    {
+                        i.stacks += amount;
+                        if (inventoryMenu.activeSelf) RefreshInventory();
+                        return 0; // No items left to add
+                    }
+                }
+            }
+        }
+
+        // Fill the empty slots with leftover items
+        foreach(ItemSlotInfo i in items)
+        {
+            // Look for an empty slot
+            if (i.item == null)
+            {
+                // Check if the amount trying to get added exceeds max stack size
+                if (amount > item.MaxStacks())
+                {
+                    // If true, fill the slot to max and reduce the amount by max stack size to get what coudn't be added
+                    i.item = item;
+                    i.stacks = item.MaxStacks();
+                    amount -= item.MaxStacks();
+                }
+                // If the remaining amount can fill a slot, add the remaining items to the slot
+                else
+                {
+                    i.item = item;
+                    i.stacks = amount;
+                    if (inventoryMenu.activeSelf) RefreshInventory();
+                    return 0; // No items left to add
+                }
+            }
+        }
+        // No space in Inventory, return remaining items
+        Debug.Log("No space in Inventory for: " + item.GiveName());
+        if (inventoryMenu.activeSelf) RefreshInventory();
+        return amount;
+            
+    }
+
+    // Helper method to clear a slot when needed
+    public void ClearSlot(ItemSlotInfo slot)
+    {
+        slot.item = null;
+        slot.stacks = 0;
     }
 }
