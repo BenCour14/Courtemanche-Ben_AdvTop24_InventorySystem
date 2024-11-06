@@ -12,6 +12,9 @@ public class Mouse : MonoBehaviour
     public Image itemImage;
     public TextMeshProUGUI stacksText;
 
+    public ItemPanel sourceItemPanel;
+    public int splitSize;
+
     // Update is called once per frame
     void Update()
     {
@@ -41,12 +44,39 @@ public class Mouse : MonoBehaviour
                 mouseItemUI.SetActive(false); // If no item, hide the item panel
             }
         }
+
+        // Splitting the stack if there's am item in the slot
+        if (itemSlot.item != null)
+        {
+            // If scrolling up on mouse wheel increase split size, can't exceed stack size
+            if (Input.GetAxis("Mouse ScrollWheel") > 0 && splitSize < itemSlot.stacks)
+            {
+                splitSize++;
+            }
+            // If scrolling down on mouse wheel decrease split size, can't go below 1
+            if (Input.GetAxis("Mouse ScrollWheel") < 0 && splitSize > 1)
+            {
+                splitSize--;
+            }
+
+            // Update split size text with new split amount
+            stacksText.text = "" + splitSize;
+
+            // If player is moving entire stack, hide source panel's stack count
+            if (splitSize == itemSlot.stacks) sourceItemPanel.stacksText.gameObject.SetActive(false);
+            else
+            {
+                // Else show altered item count on the source panel and update the text
+                sourceItemPanel.stacksText.gameObject.SetActive(true);
+                sourceItemPanel.stacksText.text = "" + (itemSlot.stacks - splitSize);
+            }
+        }
     }
 
     // Helper method that updates the UI with the selected item 
     public void SetUI()
     {
-        stacksText.text = "" + itemSlot.stacks;
+        stacksText.text = "" + splitSize;
         itemImage.sprite = itemSlot.item.GiveItemImage();
     }
 

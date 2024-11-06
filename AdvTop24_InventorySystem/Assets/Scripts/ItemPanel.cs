@@ -54,7 +54,14 @@ public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandle
     // Transfers the item from the slot to the mouse so the player can visually see the item that they've selected
     public void PickupItem()
     {
-        mouse.itemSlot = itemSlot;
+        mouse.itemSlot = itemSlot; // Set clicked item slot to mouse item slot
+        mouse.sourceItemPanel = this; // Reference for source slot
+
+        // If shift key is down when picking up item & there's more than 1 item, split stack
+        if (Input.GetKey(KeyCode.LeftShift) && itemSlot.stacks > 1) mouse.splitSize = itemSlot.stacks / 2;
+        // Else set split size equal to stack count
+        else mouse.splitSize = itemSlot.stacks;
+        
         mouse.SetUI();
     }
 
@@ -68,8 +75,21 @@ public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandle
     public void DropItem()
     {
         itemSlot.item = mouse.itemSlot.item; // Transfers item from mouse to slot
-        itemSlot.stacks = mouse.itemSlot.stacks; // Assigns stack count
-        inventory.ClearSlot(mouse.itemSlot); // Clear the item from the mouse
+
+        // See if split size is less than mouse stack size  
+        if (mouse.splitSize < mouse.itemSlot.stacks)
+        {
+            itemSlot.stacks = mouse.splitSize; // set target slot equal to split stack amount to be dropped
+            mouse.itemSlot.stacks -= mouse.splitSize; // Decrease mouse slot stack size by split size amount 
+            mouse.EmptySlot(); // CLear mouse slot
+        }
+
+        else
+        {
+            itemSlot.stacks = mouse.itemSlot.stacks; // Assigns stack count
+            inventory.ClearSlot(mouse.itemSlot); // Clear the item from the mouse
+        }
+       
     }
 
     public void SwapItem(ItemSlotInfo slotA, ItemSlotInfo slotB)
