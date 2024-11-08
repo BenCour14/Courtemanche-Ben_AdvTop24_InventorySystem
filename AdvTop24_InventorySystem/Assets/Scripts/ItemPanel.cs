@@ -8,11 +8,25 @@ using TMPro;
 public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler, IDropHandler
 {
     // References
-    public Inventory inventory;
+    [SerializeField] private Inventory _inventory;
+    public Inventory inventory => _inventory;
+
+    
+
     private Mouse mouse;
-    public ItemSlotInfo itemSlot;
+
+    [SerializeField] private ItemSlotInfo _itemSlot;
+    public ItemSlotInfo itemSlot => _itemSlot;
+
+
+    //[SerializeField] private Image _itemImage;
+    //public Image itemImage => _itemImage;
+
     public Image itemImage;
-    public TextMeshProUGUI stacksText;
+
+
+    [SerializeField] private TextMeshProUGUI _stacksText;
+    public TextMeshProUGUI stacksText => _stacksText;
 
     private bool click; // Bool to track if the click action has happened
 
@@ -50,18 +64,18 @@ public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandle
             click = false;
         }
     }
-    
+
     // Transfers the item from the slot to the mouse so the player can visually see the item that they've selected
     public void PickupItem()
     {
-        mouse.itemSlot = itemSlot; // Set clicked item slot to mouse item slot
-        mouse.sourceItemPanel = this; // Reference for source slot
+        mouse.SetItemSlot(itemSlot); // Set clicked item slot to mouse item slot using a setter method
+        mouse.SetSourceItemPanel(this); // Reference for source slot using a setter method
 
         // If shift key is down when picking up item & there's more than 1 item, split stack
         if (Input.GetKey(KeyCode.LeftShift) && itemSlot.stacks > 1) mouse.splitSize = itemSlot.stacks / 2;
         // Else set split size equal to stack count
         else mouse.splitSize = itemSlot.stacks;
-        
+
         mouse.SetUI();
     }
 
@@ -71,7 +85,7 @@ public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandle
         itemImage.CrossFadeAlpha(0.3f, 0.05f, true);
     }
 
-   // Drop selected item into a slot 
+    // Drop selected item into a slot 
     public void DropItem()
     {
         itemSlot.item = mouse.itemSlot.item; // Transfers item from mouse to slot
@@ -89,7 +103,7 @@ public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandle
             itemSlot.stacks = mouse.itemSlot.stacks; // Assigns stack count
             inventory.ClearSlot(mouse.itemSlot); // Clear the item from the mouse
         }
-       
+
     }
 
     public void SwapItem(ItemSlotInfo slotA, ItemSlotInfo slotB)
@@ -105,7 +119,7 @@ public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandle
         slotB.stacks = tempItem.stacks;
 
     }
-    
+
     // Click events for the item panel
     public void OnClick()
     {
@@ -143,5 +157,17 @@ public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandle
                 }
             }
         }
+    }
+
+    // Setter method to be able to safely set the inventory reference in the inventory script 
+    public void SetInventory(Inventory updateInventory)
+    {
+        _inventory = updateInventory;
+     }
+
+    //Setter method so that the item slot can be safely updated
+    public void SetItemSlot(ItemSlotInfo updateItemSlot)
+    {
+        _itemSlot = updateItemSlot;
     }
 }

@@ -12,37 +12,37 @@ public class Inventory : MonoBehaviour
     [Header("Inventory Menu Components")]
 
     // Refs to the different Inventory UI elements
-    public GameObject inventoryMenu;
-    public GameObject itemPanel;
-    public GameObject itemPanelGrid;
+    [SerializeField] private GameObject inventoryMenu;
+    [SerializeField] private GameObject itemPanel;
+    [SerializeField] private GameObject itemPanelGrid;
 
-    public Mouse mouse;
-    
+    [SerializeField] public Mouse mouse;
+
     // Ref to the existing panels in the inventory so it can be updated if more slots are needed
     private List<ItemPanel> existingPanels = new List<ItemPanel>();
 
     [Space]
     // Variable to set the inventory size
-    private int inventorySize = 24;
+    private int _inventorySize = 24;
 
     // Getter and setter to protect inventory size from being altered
-    public int InventorySize
+    public int inventorySize
     {
-        get { return inventorySize; }
+        get { return _inventorySize; }
         set
         {
             // Inventory size is capped at 50
-            if(value > 50)
+            if (value > 50)
             {
-                inventorySize = 50;
+                _inventorySize = 50;
                 RefreshInventory();
             }
             else
             {
-                inventorySize = value;
+                _inventorySize = value;
                 RefreshInventory();
             }
-            
+
         }
     }
 
@@ -112,7 +112,7 @@ public class Inventory : MonoBehaviour
 
         // Index to track the item slots
         int index = 0;
-        
+
         // Will look at each item slot in the items list and update it
         foreach (ItemSlotInfo i in items)
         {
@@ -126,8 +126,8 @@ public class Inventory : MonoBehaviour
             {
                 panel.name = i.name + " Panel";
 
-                panel.inventory = this;
-                panel.itemSlot = i;
+                panel.SetInventory(this); // Setting inventory reference in item panel script
+                panel.SetItemSlot(i); // Set item slot so that its UI can be updated
                 if (i.item != null)
                 {
                     // If the item exists activate the item image and stacks text
@@ -155,7 +155,7 @@ public class Inventory : MonoBehaviour
     public int AddItem(Item item, int amount)
     {
         // Checks if the item can get added to an existing stack
-        foreach(ItemSlotInfo i in items)
+        foreach (ItemSlotInfo i in items)
         {
             // Check if the item slot is not empty 
             if (i.item != null)
@@ -182,7 +182,7 @@ public class Inventory : MonoBehaviour
         }
 
         // Fill the empty slots with leftover items
-        foreach(ItemSlotInfo i in items)
+        foreach (ItemSlotInfo i in items)
         {
             // Look for an empty slot
             if (i.item == null)
@@ -209,7 +209,7 @@ public class Inventory : MonoBehaviour
         Debug.Log("No space in Inventory for: " + item.GiveName());
         if (inventoryMenu.activeSelf) RefreshInventory();
         return amount;
-            
+
     }
 
     // Helper method to clear a slot when needed
@@ -219,3 +219,4 @@ public class Inventory : MonoBehaviour
         slot.stacks = 0;
     }
 }
+

@@ -6,14 +6,26 @@ using TMPro;
 
 public class Mouse : MonoBehaviour
 {
-    public GameObject mouseItemUI;
-    public Image mouseCursor;
-    public ItemSlotInfo itemSlot;
-    public Image itemImage;
-    public TextMeshProUGUI stacksText;
+    [SerializeField] private GameObject mouseItemUI;
+    [SerializeField] private Image mouseCursor;
 
-    public ItemPanel sourceItemPanel;
-    public int splitSize;
+    [SerializeField] private ItemSlotInfo _itemSlot;
+    public ItemSlotInfo itemSlot => _itemSlot;
+
+    [SerializeField] private Image itemImage;
+    [SerializeField] private TextMeshProUGUI stacksText;
+
+    [SerializeField] private ItemPanel _sourceItemPanel;
+    public ItemPanel sourceItemPanel => _sourceItemPanel;
+
+    [SerializeField] private int _splitSize;
+
+    // Getter and setter to protect split size when being modified 
+    public int splitSize
+    {
+        get => _splitSize;
+        set => _splitSize = Mathf.Clamp(value, 1, _itemSlot.stacks); // Protects the variable by ensuring that a split stack size can't drop below 1
+    }
 
     // Update is called once per frame
     void Update()
@@ -35,7 +47,7 @@ public class Mouse : MonoBehaviour
             mouseCursor.enabled = true;
 
             // Checking if current slot has an item
-            if (itemSlot.item != null)
+            if (_itemSlot.item != null)
             {
                 mouseItemUI.SetActive(true); // Make the item panel visible
             }
@@ -46,10 +58,10 @@ public class Mouse : MonoBehaviour
         }
 
         // Splitting the stack if there's am item in the slot
-        if (itemSlot.item != null)
+        if (_itemSlot.item != null)
         {
             // If scrolling up on mouse wheel increase split size, can't exceed stack size
-            if (Input.GetAxis("Mouse ScrollWheel") > 0 && splitSize < itemSlot.stacks)
+            if (Input.GetAxis("Mouse ScrollWheel") > 0 && splitSize < _itemSlot.stacks)
             {
                 splitSize++;
             }
@@ -63,12 +75,12 @@ public class Mouse : MonoBehaviour
             stacksText.text = "" + splitSize;
 
             // If player is moving entire stack, hide source panel's stack count
-            if (splitSize == itemSlot.stacks) sourceItemPanel.stacksText.gameObject.SetActive(false);
+            if (splitSize == _itemSlot.stacks) sourceItemPanel.stacksText.gameObject.SetActive(false);
             else
             {
                 // Else show altered item count on the source panel and update the text
                 sourceItemPanel.stacksText.gameObject.SetActive(true);
-                sourceItemPanel.stacksText.text = "" + (itemSlot.stacks - splitSize);
+                sourceItemPanel.stacksText.text = "" + (_itemSlot.stacks - splitSize);
             }
         }
     }
@@ -77,12 +89,24 @@ public class Mouse : MonoBehaviour
     public void SetUI()
     {
         stacksText.text = "" + splitSize;
-        itemImage.sprite = itemSlot.item.GiveItemImage();
+        itemImage.sprite = _itemSlot.item.GiveItemImage();
     }
 
     // Helper method to empty a slot
     public void EmptySlot()
     {
-        itemSlot = new ItemSlotInfo(null, 0);
+        _itemSlot = new ItemSlotInfo(null, 0);
+    }
+
+    // Setter method so that _the item slot can be updated safely from other scripts
+    public void SetItemSlot(ItemSlotInfo updatedSlot)
+    {
+        _itemSlot = updatedSlot;
+    }
+
+    // Setter method allowing the source item panel to be updated from other scripts
+    public void SetSourceItemPanel(ItemPanel updateSourcePanel)
+    {
+        _sourceItemPanel = updateSourcePanel;
     }
 }

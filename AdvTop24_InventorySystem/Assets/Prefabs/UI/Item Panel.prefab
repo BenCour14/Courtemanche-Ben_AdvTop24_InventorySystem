@@ -304,9 +304,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: feb7ee9a7305b9040b8bd7ef1483d65d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventory: {fileID: 0}
-  itemSlot:
+  _inventory: {fileID: 0}
+  _itemSlot:
     name: 
     stacks: 0
   itemImage: {fileID: 2695856560230174187}
-  stacksText: {fileID: 2695856559954813644}
+  _stacksText: {fileID: 2695856559954813644}
