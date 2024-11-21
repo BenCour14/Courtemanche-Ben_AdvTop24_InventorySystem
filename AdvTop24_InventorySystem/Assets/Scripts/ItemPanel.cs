@@ -120,6 +120,29 @@ public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandle
 
     }
 
+    public void StackItem(ItemSlotInfo source, ItemSlotInfo destination, int amount)
+    {
+        // Figure out avalable space in the destination slot
+        int slotsAvailable = destination.item.MaxStacks() - destination.stacks;
+        if (slotsAvailable == 0) return; // Return if there's no available space
+
+        // If the amount that you're trying to transfer is more than the available space, fill the destination slot to max
+        if (amount > slotsAvailable)
+        {
+            source.stacks -= slotsAvailable; // Reduce amount transfered from the source slot
+            destination.stacks = destination.item.MaxStacks();
+        }
+
+       // If the amount that you're trying to transfer fits within the available space, transfer all of it, else reduce the source stack by amount moved
+        if (amount <= slotsAvailable)
+        {
+            destination.stacks += amount;
+            if (source.stacks == amount) inventory.ClearSlot(source);
+            else source.stacks -= amount;
+        }
+    }
+
+
     // Click events for the item panel
     public void OnClick()
     {
@@ -153,6 +176,12 @@ public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandle
                 else if (itemSlot.item.GiveName() != mouse.itemSlot.item.GiveName())
                 {
                     SwapItem(itemSlot, mouse.itemSlot); // Swap the different items between the mouse and slot
+                    inventory.RefreshInventory();
+                }
+                // Cliked on occupied slot of same type
+                else if (itemSlot.stacks < itemSlot.item.MaxStacks())
+                {
+                    StackItem(mouse.itemSlot, itemSlot, mouse.splitSize);
                     inventory.RefreshInventory();
                 }
             }
