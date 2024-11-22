@@ -21,6 +21,9 @@ public class Inventory : MonoBehaviour
     // Ref to the existing panels in the inventory so it can be updated if more slots are needed
     private List<ItemPanel> existingPanels = new List<ItemPanel>();
 
+    // Dictionary that stores all available items using their name
+    Dictionary<string, Item> allItemsDictionary = new Dictionary<string, Item>();
+
     [Space]
     // Variable to set the inventory size
     private int _inventorySize = 24;
@@ -28,7 +31,7 @@ public class Inventory : MonoBehaviour
     // Getter and setter to protect inventory size from being altered
     public int inventorySize
     {
-        get { return _inventorySize; }
+        get {return _inventorySize;}
         set
         {
             // Inventory size is capped at 50
@@ -56,9 +59,29 @@ public class Inventory : MonoBehaviour
             items.Add(new ItemSlotInfo(null, 0));
         }
 
+        // Convert all of the items that return as an array to a list
+        List<Item> allItems = GetAllItems().ToList();
+        string itemsInDictionary = "Items in Dictionary: ";
+        foreach (Item i in allItems)
+        {
+            // Add items to dictionary if it's name is not already there
+            if (!allItemsDictionary.ContainsKey(i.GiveName()))
+            {
+                allItemsDictionary.Add(i.GiveName(), i);
+                itemsInDictionary += ", " + i.GiveName();
+            }
+            else
+            {
+                // Debug for if there's a duplicate name
+                Debug.Log("" + i + " already exists in Dictionary - shares name with " + allItemsDictionary[i.GiveName()]);
+            }
+        }
+        itemsInDictionary += ".";
+        Debug.Log(itemsInDictionary);
+
         // Adding items for testing purposes
-        AddItem(new WoodItem(), 40);
-        AddItem(new StoneItem(), 20);
+        AddItem("Wood", 40);
+        AddItem("Stone", 20);
     }
 
     // Update is called once per frame
@@ -87,6 +110,12 @@ public class Inventory : MonoBehaviour
 
                 RefreshInventory();
             }
+        }
+
+        // Drop whatever item is currently being held by the mouse
+        if (Input.GetKeyDown(KeyCode.Mouse1) && mouse.itemSlot.item != null)
+        {
+            RefreshInventory();
         }
 
     }
@@ -152,8 +181,19 @@ public class Inventory : MonoBehaviour
 
     }
 
-    public int AddItem(Item item, int amount)
+    public int AddItem(string itemName, int amount)
     {
+        // Find Item to add
+        Item item = null;
+        allItemsDictionary.TryGetValue(itemName, out item);
+
+        // Exit method if no item was found
+        if (item == null)
+        {
+            Debug.Log("Could not find Item in Dictionary to add to Inventory");
+            return amount;
+        }
+
         // Checks if the item can get added to an existing stack
         foreach (ItemSlotInfo i in items)
         {
@@ -217,6 +257,14 @@ public class Inventory : MonoBehaviour
     {
         slot.item = null;
         slot.stacks = 0;
+    }
+
+    // Go through entire project and find all the scripts that are a subtype of Item 
+    IEnumerable<Item> GetAllItems()
+    {
+        return System.AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(assembly => assembly.GetTypes()).Where(type => type.IsSubclassOf(typeof(Item)))
+            .Select(type => System.Activator.CreateInstance(type) as Item);
     }
 }
 
