@@ -7,10 +7,12 @@ public class StoneItem : Item
     {
         return "Stone";
     }
+
     public override int MaxStacks()
     {
         return 5;
     }
+
     public override Sprite GiveItemImage()
     {
         return Resources.Load<Sprite>("UI/Item Images/Stone Icon");
