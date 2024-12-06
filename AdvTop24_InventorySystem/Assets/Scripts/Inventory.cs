@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 public class Inventory : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class Inventory : MonoBehaviour
     [SerializeField] private GameObject inventoryMenu;
     [SerializeField] private GameObject itemPanel;
     [SerializeField] private GameObject itemPanelGrid;
+    [SerializeField] private GameObject player; 
+
 
     [SerializeField] public Mouse mouse;
 
@@ -117,6 +120,11 @@ public class Inventory : MonoBehaviour
         {
             RefreshInventory();
         }
+
+        /*if (Input.GetKeyDown(KeyCode.Mouse0) && mouse.itemSlot.item != null && !EventSystem.current.IsPointerOverGameObject())
+        {
+            DropItem(mouse.itemSlot.item.GiveName());
+        }*/
 
     }
 
@@ -251,6 +259,40 @@ public class Inventory : MonoBehaviour
         return amount;
 
     }
+
+    /*public void DropItem(string itemName)
+    {
+        // Find Item to add
+        Item item = null;
+        allItemsDictionary.TryGetValue(itemName, out item);
+
+        // Exit method if no item was found
+        if (item == null)
+        {
+            Debug.Log("Could not find Item in Dictionary to drop");
+            return;
+        }
+
+        Transform playerTransform = player.transform;
+
+        GameObject droppedItem = Instantiate(item.DropObject(), this.transform.root.position + new Vector3(0, 2f, 2) + playerTransform.forward, Quaternion.Euler(Vector3.zero));
+
+        Rigidbody rb = droppedItem.GetComponent<Rigidbody>();
+        if (rb != null) rb.velocity = playerTransform.forward * 25;
+
+        ItemPickup ip = droppedItem.GetComponentInChildren<ItemPickup>();
+        if (ip != null)
+        {
+            ip.itemToDrop = itemName;
+            ip.amount = mouse.splitSize;
+            mouse.itemSlot.stacks -= mouse.splitSize;
+        }
+
+        if (mouse.itemSlot.stacks < 1) ClearSlot(mouse.itemSlot);
+        mouse.EmptySlot();
+        RefreshInventory();
+    } 
+    */
 
     // Helper method to clear a slot when needed
     public void ClearSlot(ItemSlotInfo slot)

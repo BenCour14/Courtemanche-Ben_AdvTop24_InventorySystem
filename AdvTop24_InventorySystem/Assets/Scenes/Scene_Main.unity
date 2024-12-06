@@ -524,7 +524,7 @@ GameObject:
   - component: {fileID: 53896832}
   - component: {fileID: 53896831}
   - component: {fileID: 53896830}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GroundPlane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1824,6 +1824,7 @@ MonoBehaviour:
   inventoryMenu: {fileID: 114855081}
   itemPanel: {fileID: 2695856561396257477, guid: 15691ee0a8440e04d8219202ad409247, type: 3}
   itemPanelGrid: {fileID: 1334669351}
+  player: {fileID: 1357659014}
   mouse: {fileID: 1442103666}
   references:
     version: 2
@@ -2624,7 +2625,7 @@ GameObject:
   - component: {fileID: 1357659015}
   - component: {fileID: 1357659020}
   - component: {fileID: 1357659019}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
